@@ -151,94 +151,87 @@ MuseScore {
   {
     anchors.fill: parent
     id: 'drumsetPatternsMainLayout'
-    
-    Label
+    spacing: 5
+    anchors.margins: 10
+    Row
     {
-      id: sourceFileLabel
-      text: "Source: "
-      font.bold: true
-      Layout.topMargin: 10
-      Layout.leftMargin: 10
-      Layout.fillWidth: true
-      anchors.top: parent.top
-    }
-    
-    ComboBox 
-    {
-      id: filesCombo
-      model: filesListModel
-      Layout.leftMargin: 10
-      Layout.rightMargin: 10
-      Layout.fillWidth: true
-      onCurrentIndexChanged: fileSelectionChanged()
-      anchors.top: sourceFileLabel.bottom
-    }
-        
-    Label
-    {
-      id: categoryLabel
-      text: "Category: "
-      font.bold: true
-      Layout.topMargin: 10
-      Layout.leftMargin: 10
-      anchors.top: filesCombo.bottom
-    }
-    
-    RowLayout
-    {
-      id: categoriesFillRow
-      anchors.top: categoryLabel.bottom
+      spacing: 12
 
-      ComboBox 
+      Column
       {
-        id: categoriesCombo
-        model: categoriesListModel
-        Layout.leftMargin: 10
-        Layout.rightMargin: 10
-        Layout.alignment: Qt.AlignLeft
-        Layout.fillWidth: true
-        onCurrentIndexChanged: categorySelectionChanged()
-      }
-      
-      CheckBox 
-      {
-        id: fillCheckBox
-        text: "Fill"
-        checked: fillChecked
-        Layout.preferredWidth: parent.width / 4
-        Layout.alignment: Qt.AlignRight
-        onClicked: {
-          fillChecked = !fillChecked;
-          fillCheckBoxClicked();
+        StyledTextLabel
+        {
+          id: sourceFileLabel
+          text: "Source: "
+          font.bold: true           
+        }
+        
+        ComboBox
+        {
+          id: filesCombo
+          model: filesListModel      
+          Layout.fillWidth: true
+          onCurrentIndexChanged: fileSelectionChanged()      
         }
       }
+      Column
+      { 
+        id: categoryColumn
+        StyledTextLabel
+        {
+          id: categoryLabel
+          text: "Category: "
+          font.bold: true      
+        }
+        Row 
+        {
+          spacing: 12
+          ComboBox 
+          {
+            id: categoriesCombo
+            model: categoriesListModel          
+            Layout.fillWidth: true
+            onCurrentIndexChanged: categorySelectionChanged()
+          }
+          CheckBox 
+          {
+            id: fillCheckBox
+            text: "Fill"
+            anchors.verticalCenter: parent.verticalCenter
+
+            checked: fillChecked             
+            onClicked: {
+              fillChecked = !fillChecked;
+              fillCheckBoxClicked();
+            }
+          }    
+        }
+      }
+
     }
 
-    Label 
+    StyledTextLabel 
     {
       id: patternLabel
       text: "Pattern: "
       font.bold: true
-      Layout.leftMargin: 10
-      anchors.top: categoriesFillRow.bottom
-    }
-    
-    SystemPalette { id: palette; colorGroup: SystemPalette.Active }
+    }    
 
-    ListView
+    StyledListView
     {
       id:patternsListView
       anchors.top: patternLabel.bottom
       anchors.bottom: dummySpacer.top
-      Layout.margins: 10
-      Layout.fillWidth: true
-     
-
+      anchors.topMargin: 5      
+      Layout.fillWidth: true           
+      
       model: patternsListModel
-      delegate: Text 
+      delegate: StyledTextLabel 
       {
-        text: name 
+        text: name         
         width: patternsListView.width
+        //horizontalAlignment: Text.AlignLeft
+
         MouseArea 
         {
           anchors.fill: parent
@@ -246,7 +239,7 @@ MuseScore {
         }
       }
       
-      highlight: Rectangle { color: "lightsteelblue"; radius: 5 }
+      highlight: Rectangle { color: ui.theme.accentColor; radius: 3 }
       highlightFollowsCurrentItem: true
       highlightMoveDuration: 0
       highlightMoveVelocity: -1
@@ -254,18 +247,19 @@ MuseScore {
       onCurrentItemChanged: selectedPatternChanged();
     }
     
-    Label 
+    StyledTextLabel 
     {
       id: dummySpacer
       anchors.bottom: selectedPatternCategoriesLabel.top
       Layout.margins: 10
     }
     
-    Label 
+    StyledTextLabel 
     {
       id: selectedPatternCategoriesLabel
       font.italic: true
       Layout.fillWidth: true
+      horizontalAlignment: Text.AlignLeft
 
       Layout.margins: 20
       anchors.bottom: buttonsRow.top
@@ -277,23 +271,22 @@ MuseScore {
       spacing: 5
       padding: 5
       anchors.bottom: drumsetPatternsMainLayout.bottom
+      anchors.right: drumsetPatternsMainLayout.right
 
-      RoundButton 
+      FlatButton 
       {
         id: applyButton
         text: qsTranslate("PrefsDialogBase", "Apply")
-        font.bold: true
-        radius: 5
+        accentButton: true        
         onClicked: applyPattern()
       }
       
-      RoundButton 
+      FlatButton 
       {
         id: aboutButton
-        text: "About"
-        radius: 5
+        text: "About"  
+        isNarrow: true      
         onClicked: aboutDialog.open()
-
       }
     }
   }
