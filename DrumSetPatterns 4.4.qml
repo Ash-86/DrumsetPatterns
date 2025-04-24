@@ -151,7 +151,7 @@ MuseScore {
   {
     anchors.fill: parent
     id: 'drumsetPatternsMainLayout'
-    spacing: 5
+    spacing: 12
     anchors.margins: 10
     Row
     {
@@ -159,6 +159,7 @@ MuseScore {
 
       Column
       {
+        spacing: 5
         StyledTextLabel
         {
           id: sourceFileLabel
@@ -166,16 +167,27 @@ MuseScore {
           font.bold: true           
         }
         
-        ComboBox
+        StyledDropdown
         {
           id: filesCombo
-          model: filesListModel      
+          model: { 
+            var array = [];
+            for (var i = 0; i < filesListModel.count; i++) {
+                array.push(filesListModel.get(i).name);
+            }
+            return array;                
+          }         
           Layout.fillWidth: true
-          onCurrentIndexChanged: fileSelectionChanged()      
+          currentIndex: 0
+          onActivated: function(index, value) {
+              currentIndex = index
+              fileSelectionChanged()              
+          }                   
         }
       }
       Column
       { 
+        spacing: 5
         id: categoryColumn
         StyledTextLabel
         {
@@ -186,12 +198,22 @@ MuseScore {
         Row 
         {
           spacing: 12
-          ComboBox 
+          StyledDropdown 
           {
             id: categoriesCombo
-            model: categoriesListModel          
+            model: { 
+              var array = [];
+              for (var i = 0; i < categoriesListModel.count; i++) {
+                  array.push(categoriesListModel.get(i).name);
+              }
+              return array;                
+            }        
             Layout.fillWidth: true
-            onCurrentIndexChanged: categorySelectionChanged()
+            currentIndex: 0            
+            onActivated: function(index, value) {
+                currentIndex = index
+                categorySelectionChanged()
+            }     
           }
           CheckBox 
           {
@@ -207,7 +229,6 @@ MuseScore {
           }    
         }
       }
-
     }
 
     StyledTextLabel 
@@ -230,8 +251,9 @@ MuseScore {
       {
         text: name         
         width: patternsListView.width
-        //horizontalAlignment: Text.AlignLeft
-
+        horizontalAlignment: Text.AlignLeft
+        leftPadding: 5
+        topPadding: 2
         MouseArea 
         {
           anchors.fill: parent
@@ -529,7 +551,8 @@ MuseScore {
       categoriesListModel.append({"name": cats[fc]});
     }
              
-    categoriesCombo.currentIndex = categoriesCombo.find("All Categories");           // All Categories.
+    categoriesCombo.currentIndex = 0 //categoriesCombo.find("All Categories");           // All Categories.
+    categorySelectionChanged()
   }
 
 //=============================================================================
@@ -937,9 +960,17 @@ property var tieFromTick: -1;
     }
   
     workingDirectory = Qt.resolvedUrl(".");
-    readDrumPatternFiles();
-    
+    readDrumPatternFiles();    
     // setDefaults();
+  }
+  // not sure why Component.onCompleted did not work, even with Qt.callLater
+  Timer {
+      interval: 10 // Time in milliseconds
+      running: true
+      repeat: false
+      onTriggered: {
+          fileSelectionChanged() 
+      }
   }
       
 }
